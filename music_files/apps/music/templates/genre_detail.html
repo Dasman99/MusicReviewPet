@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+        <div class="ms_content_wrapper padder_top80">
+            <div class="ms_rcnt_slider marger_top60">
+<!--                <div class="ms_heading">-->
+<!--                    <h1>Romantics</h1>-->
+<!--                    <span class="veiw_all"><a href="#">view more</a></span>-->
+<!--                </div>-->
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="ms_rcnt_box">
+                                    <div class="ms_rcnt_box_img">
+                                        <img src="{{object.image.url}}" alt="">
+                                        <div class="ms_main_overlay">
+                                            <div class="ms_box_overlay"></div>
+                                            <div class="ms_more_icon">
+                                                <img src="{{object.image.url}}" alt="">
+                                            </div>
+                                            <ul class="more_option">
+                                                <li><a href="#"><span class="opt_icon"><span class="icon icon_fav"></span></span>Add To Favourites</a></li>
+                                                <li><a href="#"><span class="opt_icon"><span class="icon icon_queue"></span></span>Add To Queue</a></li>
+                                                <li><a href="#"><span class="opt_icon"><span class="icon icon_playlst"></span></span>Add To Playlist</a></li>
+                                                <li><a href="#"><span class="opt_icon"><span class="icon icon_share"></span></span>Share</a></li>
+                                            </ul>
+                                            <div class="ms_play_icon">
+                                                <img src="{{object.image.url}}" alt="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ms_rcnt_box_text">
+                                        <h3><a href="#">{{object.name}}</a></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add Arrows -->
+                    <div class="swiper-button-next5 slider_nav_next"></div>
+                    <div class="swiper-button-prev5 slider_nav_prev"></div>
+            </div>
+        </div>
+
+{% endblock %}

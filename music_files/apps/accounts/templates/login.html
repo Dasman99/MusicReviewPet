@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+        <div class="padder_top80">
+            <div class="ms_profile_wrapper">
+                <h1>Edit Profile</h1>
+                <div class="ms_profile_box">
+                    <div class="ms_pro_img">
+                        <img src="images/pro_img.jpg" alt="" class="img-fluid">
+                        <div class="pro_img_overlay">
+                            <i class="fa_icon edit_icon"></i>
+                        </div>
+                    </div>
+                    <form class="ms_pro_form" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>{{ form.email.label }}</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="form-group">
+                            <label>{{ form.password.label }}</label>
+                            {{ form.password }}
+                        </div>
+                        <div class="pro-form-btn text-center marger_top15">
+                            <button class="ms_btn" type="submit" value="Login">
+                                    Войти
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}

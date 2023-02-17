@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+        <div class="padder_top80">
+            <!----Edit Profile Wrapper Start---->
+            <div class="ms_profile_wrapper">
+                <h1>Registration Profile</h1>
+                <div class="ms_profile_box">
+                    <div class="ms_pro_img">
+                        <img src="images/pro_img.jpg" alt="" class="img-fluid">
+                        <div class="pro_img_overlay">
+                            <i class="fa_icon edit_icon"></i>
+                        </div>
+                    </div>
+                    <form class="ms_pro_form" method="post">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <div class="alert alert-danger">
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                        <div class="form-group">
+                            <label>{{ form.first_name.label }}</label>
+                            {{form.first_name}}
+                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label>{{ form.last_name.label }}</label>-->
+<!--                            {{form.last_name}}-->
+<!--                        </div>-->
+                        <div class="form-group">
+                            <label>{{ form.email.label }}</label>
+                            {{ form.email }}
+<!--                            <input type="text" placeholder="bella.scott@dummymail.com" class="form-control">-->
+                        </div>
+<!--                        <div class="row"></div>-->
+<!--                            <div class="col-md-6">-->
+<!--                                <label for="" class="mb-3">{{ form.first_name.label }}</label>-->
+<!--                                {{form.first_name}}-->
+<!--                            </div>-->
+<!--                            <div class="col-md-6">-->
+<!--                                <label for="" class="mb-3">{{ form.last_name.label }}</label>-->
+<!--                                {{form.last_name}}-->
+<!--                            </div>-->
+                        <div class="row"></div>
+                            <div class="form-group">
+                                <label>{{ form.password1.label }}</label>
+                                {{ form.password1 }}
+    <!--                            <input type="password" placeholder="******" class="form-control">-->
+                            </div>
+                            <div class="form-group">
+                                <label>{{ form.password2.label }}</label>
+                                {{ form.password2 }}
+    <!--                            <input type="password" placeholder="******" class="form-control">-->
+                            </div>
+                        <div class="pro-form-btn text-center marger_top15">
+                            <button class="ms_btn" type="submit" value="Login">
+                                <a>Зарегистрироваться</a>
+                                <a href="{% url 'index' %}">Отмена</a>
+                            </button>
+
+<!--                            <a class="ms_btn">save</a>-->
+<!--                            <a href="#" class="ms_btn">cancel</a>-->
+                        </div>
+<!--                        <div class="btn-area">-->
+<!--                            <button class="btn-fill btn-primary" type="submit" value="Login">-->
+<!--                                    Войти<i class="flaticon-next"></i>-->
+<!--                            </button>-->
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+            <!----Main div close---->
+
+{% endblock %}

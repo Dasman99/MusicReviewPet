@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="padder_top80">
+      <div class="ms_upload_wrapper marger_top60">
+            <div class="marger_top60">
+                  <div class="ms_upload_box">
+                        <div class="ms_pro_form">
+                              <div class="form-group">
+                                    <div class="col-lg-12 col-md-12">
+                                          <div class="ms_upload_box">
+                                          </div>
+                                    </div>
+                                    <form action="{% url 'artist_add' %}" class="ms_pro_form" method="post">
+                                          {% csrf_token %}
+                                          {{form.title}}
+                                          {{form.img}}
+                                          {{form.desc}}
+                                          <div class="pro-form-btn text-center marger_top15">
+                                                <button class="ms_btn" type="submit">
+                                                      Запостить
+                                                </button>
+                                          </div>
+                                    </form>
+                              </div>
+                        </div>
+                  </div>
+            </div>
+      </div>
+</div>
+{% endblock %}
