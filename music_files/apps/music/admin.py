@@ -28,11 +28,32 @@ class ReviewAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ["text", ]
+    list_display = ["text"]
 
 
-admin.site.register(Album)
-admin.site.register(Artist)
+class SongInline(admin.TabularInline):
+    model = Song
+
+
+@admin.register(Album)
+class AlbumAdmin(admin.ModelAdmin):
+    inlines = [ SongInline ]
+    list_display = ["title"]
+    filter_horizontal = ["genre"]
+
+
+@admin.register(Song)
+class SongAdmin(admin.ModelAdmin):
+    list_display = ["title"]
+    filter_horizontal = ["genre"]
+
+
+@admin.register(Artist)
+class ArtistAdmin(admin.ModelAdmin):
+    list_display = ["name"]
+    filter_horizontal = ["genre"]
+# admin.site.register(Album)
+
 # admin.site.register(Attachment)
 
 

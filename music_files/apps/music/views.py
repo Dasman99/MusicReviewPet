@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-
 from django.views.generic import (
     View,
     TemplateView,
@@ -9,11 +8,8 @@ from django.views.generic import (
     FormView,
     UpdateView, CreateView,
 )
-
-
-# Create your views here.
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from .forms import *
 
 
@@ -25,6 +21,18 @@ class ReviewListView(ListView):
     template_name = "review.html"
     model = Review
     queryset = Review.objects.filter(is_draft=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        latest_posts = Review.objects.filter(is_draft=False).order_by("-created")
+        if len(latest_posts) < 4:
+            context["latest_posts"] = latest_posts
+        else:
+            context["latest_posts"] = latest_posts[:4]
+
+        context["genres"] = Genre.objects.all()
+
+        return context
 
 
 class GenreListView(ListView):
@@ -49,7 +57,7 @@ class GenreCreate(View):
         if bound_form.is_valid():
             new_add = bound_form.save()
             return redirect(new_add)
-        return render(request, 'genre.html', context={'form': bound_form})
+        return render(request, 'genre_add.html', context={'form': bound_form})
 
 
 class ArtistListView(ListView):
@@ -58,50 +66,19 @@ class ArtistListView(ListView):
     queryset = Artist.objects.all()
 
 
-class ArtistAdd(View):
+class ArtistAdd(FormView):
+    model = Artist
 
     def get(self, request):
         form = ArtistForm
         return render(request, 'artist_add.html', context={'form': form})
 
     def post(self, request):
-        bound_form = ArtistForm()
-        if bound_form.is_valid():
-            new_add = bound_form.save()
+        form = ArtistForm(data=request.POST)
+        if form.is_valid():
+            new_add = form.save()
             return redirect(new_add)
-        return render(request, 'artist_add.html', context={'form': bound_form})
-
-
-class AlbumListView(ListView):
-    template_name = "albums.html"
-    model = Album
-    queryset = Album.objects.filter(is_draft=False)
-
-
-class AlbumDetailView(DetailView):
-    template_name = "album_detail.html"
-    model = Album
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        latest_posts = Album.objects.filter(is_draft=False).order_by("-release")
-        if len(latest_posts) < 4:
-            context["latest_albums"] = latest_posts
-        else:
-            context["latest_albums"] = latest_posts[:4]
-
-        return context
-
-
-# class UploadView(FormView):
-#     template_name = 'form.html'
-#     form_class = UploadForm
-#     success_url = '/done/'
-#
-#     def form_valid(self, form):
-#         for each in form.cleaned_data['attachments']:
-#             Attachment.objects.create(file=each)
-#         return super(UploadView, self).form_valid(form)
+        return render(request, 'artist_add.html', {'form': form})
 
 
 class ArtistDetailView(DetailView):
@@ -109,15 +86,24 @@ class ArtistDetailView(DetailView):
     model = Artist
 
 
+class AlbumListView(ListView):
+    template_name = "albums.html"
+    model = Album
+
+
+class AlbumDetailView(DetailView):
+    template_name = "album_detail.html"
+    model = Album
+
+
 class ReviewDetailView(DetailView):
     template_name = "review_detail.html"
     model = Review
 
     def get_context_data(self, **kwargs):
-        context = super(ReviewDetailView,self).get_context_data(**kwargs)
-        comments = Comment.objects.filter(review=self.get_object())
-        context['comments'] = comments
-        context['form'] = CommentCreateForm
+        context = super().get_context_data(**kwargs)
+        context["form"] = CommentCreateForm()
+        context["comments"] = Comment.objects.filter(review=self.get_object())
         return context
 
 
@@ -139,16 +125,18 @@ class AddCommentView(LoginRequiredMixin, CreateView):
 
 class ReviewCreateView(LoginRequiredMixin, FormView):
     model = Review
-    form_class = UploadForm
-    success_url = reverse_lazy('review_detail')
+    form_class = ReviewForm
+    success_url = reverse_lazy('index')
     login_url = reverse_lazy('login')
     template_name = "review_create.html"
 
     def form_valid(self, form):
-        post = form.save(commit=False)
-        post.author = self.request.user
-        post.save()
-        return super().form_valid(form)
+        for each in form.cleaned_data['title']:
+            Review.objects.create(file=each)
+        return super(ReviewCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('index')
 
 
 class AuthorReviewListView(LoginRequiredMixin, ListView):
@@ -161,7 +149,7 @@ class AuthorReviewListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        latest_posts = Review.objects.filter(is_draft=False).order_by("-created")
+        latest_posts = Review.objects.filter().order_by("-created")
         if len(latest_posts) < 4:
             context["latest_posts"] = latest_posts
         else:
@@ -179,7 +167,7 @@ def delete_review(request, pk):
 
 
 class ReviewUpdateView(LoginRequiredMixin, UpdateView):
-    form_class = UploadForm
+    form_class = ReviewForm
     model = Review
     success_url = reverse_lazy("reviews_author")
     template_name = "review_create.html"

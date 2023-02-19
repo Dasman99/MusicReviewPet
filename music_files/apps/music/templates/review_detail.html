@@ -57,7 +57,7 @@
                                             <p>{{comment.created}}</p>
                                             <p>{{comment.author}}</p>
                                         </div>
-                                            <p>{{comment.text}}</p>
+                                        <p>{{comment.text}}</p>
                                         <a href="#" class="comment_reply">reply</a>
                                     </div>
                                     {% endfor %}
@@ -68,9 +68,8 @@
                     <!----Blog Comment Form---->
                     <div class="blog_comments_forms">
                         <h1>Leave A Comment</h1>
-
-                        <div class="row">
-                            <form action="{% url 'add_comment' object.id %}" method="post">
+                        <form action="{% url 'add_comment' object.id %}" method="post">
+                            <div class="row">
                                 <div class="col-lg-12 col-md-12">
                                     {% csrf_token %}
                                     {{form}}
@@ -79,8 +78,8 @@
                                                 value="Post Comment"></button>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

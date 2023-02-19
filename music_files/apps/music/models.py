@@ -3,14 +3,6 @@ from django.db import models
 from apps.accounts.models import User
 
 
-# class AudioFile(models.Model):
-#     # name = models.CharField(max_length=100)
-#     file = models.FileField(upload_to='audio_files/')
-#
-#     def __str__(self):
-#         return self.file
-
-
 class Genre(models.Model):
     name = models.CharField("Название", max_length=200, unique=True)
     description = models.TextField("Описание", null=True)
@@ -43,29 +35,20 @@ class Artist(models.Model):
 class Album(models.Model):
     title = models.CharField("Название", max_length=50)
     image = models.ImageField("Фото", upload_to='media/albums_icon')
-    release = models.DateTimeField()
-    is_draft = models.BooleanField("Черновик", default=True)
     artist = models.ForeignKey(
         Artist,
         on_delete=models.CASCADE,
         null=True,
+        related_name="albums_song"
     )
     genre = models.ManyToManyField(Genre, related_name="genre_albums")
-
+#
     class Meta:
         verbose_name = "Альбом"
         verbose_name_plural = "Альбомы"
 
     def __str__(self):
         return self.title
-
-
-# class AudioFile(models.Model):
-#     album = models.ForeignKey(Album, on_delete=models.CASCADE, default=None)
-#     file = models.FileField()
-
-# class Attachment(models.Model):
-#     file = models.FileField(upload_to='media/audio_files')
 
 
 class Review(models.Model):
@@ -76,10 +59,10 @@ class Review(models.Model):
     updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
     is_draft = models.BooleanField("Черновик", default=True)
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, default=None)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, default=None, related_name="artists")
     genre = models.ManyToManyField(Genre)
     file = models.FileField(upload_to='media/audio_files', default=None)
-    album = models.ForeignKey(Album, on_delete=models.CASCADE, null=True)
+    # album = models.ForeignKey(Album, on_delete=models.CASCADE, null=)
 
     class Meta:
         verbose_name = "Рецензия"
@@ -101,3 +84,16 @@ class Comment(models.Model):
 
     def __str__(self):
         return format(self.text)
+
+
+class Song(models.Model):
+    title = models.CharField(max_length=255)
+    singer = models.ForeignKey(Artist, on_delete=models.SET_NULL, null=True, related_name="songs")
+    album = models.ForeignKey(Album,  on_delete=models.CASCADE, null=True, related_name="albums_songs")
+    genre = models.ManyToManyField(Genre, related_name="genre_songs")
+    audio_file = models.FileField(upload_to="songs/")
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Song"
+        verbose_name_plural = "Songs"

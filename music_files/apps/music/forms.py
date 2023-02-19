@@ -12,21 +12,25 @@ class GenreForm(forms.Form):
     image = forms.ImageField()
     description = forms.Textarea()
 
-    def clean_slug(self):
-        new_slug = self.cleaned_data['slug'].lower()
+    # def clean_slug(self):
+    #     new_slug = self.cleaned_data['slug'].lower()
+    #
+    #     if new_slug == 'create':
+    #         raise ValidationError('Slug уже занят')
+    #     return new_slug
 
-        if new_slug == 'create':
-            raise ValidationError('Slug уже занят')
-        return new_slug
-
-    def save(self):
-        new_add = Genre.object.create(
-            title=self.cleaned_data['title'],
-            desc=self.cleaned_data['description'],
-            slug=self.cleaned_data['slug']
-        )
-
-        return new_add
+    class Meta:
+        model = Genre
+        fields = [
+            "text",
+            "slug",
+            "image",
+                  ]
+        widgets = {
+            "text":forms.Textarea(attrs={"class":"form-control"}),
+            "slug":forms.SlugField(),
+            "image":forms.ImageField(),
+        }
 
 
 class ArtistForm(forms.Form):
@@ -35,12 +39,12 @@ class ArtistForm(forms.Form):
     img = forms.ImageField()
     description = forms.Textarea()
 
-    def clean_slug(self):
-        new_slug = self.cleaned_data['slug'].lower()
-
-        if new_slug == 'create':
-            raise ValidationError('Slug уже занят')
-        return new_slug
+    # def clean_slug(self):
+    #     new_slug = self.cleaned_data['slug'].lower()
+    #
+    #     if new_slug == 'create':
+    #         raise ValidationError('Slug уже занят')
+    #     return new_slug
 
     def save(self):
         new_add = Artist.object.create(
@@ -49,18 +53,24 @@ class ArtistForm(forms.Form):
             img=self.cleaned_data['img'],
             slug=self.cleaned_data['slug'],
         )
-
         return new_add
 
 
-# class ReviewCreateForm(forms.ModelForm):
-#     description = forms.Textarea()
-class UploadForm(forms.ModelForm):
+from django_select2 import forms as s2forms
+
+class ArtistWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+    ]
+
+
+class ReviewForm(forms.ModelForm):
     files = MultiMediaField(
         min_num=1,
         max_num=15,
         # max_file_size=1024*1024*5,
-        media_type='audio'  # 'audio', 'video' or 'image'
+        media_type='audio',  # 'audio', 'video' or 'image',
+        attrs={"class":"form-control"}
     )
 
     class Meta:
@@ -71,17 +81,17 @@ class UploadForm(forms.ModelForm):
             'image',
             'artist',
             'genre',
-            'file',
+            # 'file',
             'is_draft',
         )
 
-    widgets = {
-        "title":forms.TextInput(attrs={"class":"form-group"}),
-        "image":forms.FileInput(attrs={"class":"form-group"}),
-        "file":forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True})),
-        "artist":forms.Select(attrs={"class":"form-group"}),
-        "genre": forms.Select(attrs={"class":"form-group"}),
-    }
+        widgets = {
+            "title":forms.TextInput(attrs={"class":"form-control"}),
+            "image":forms.FileInput(attrs={"class":"form-control"}),
+            # "file":forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True})),
+            "artist":ArtistWidget(attrs={"class":"form-control"}),
+            "genre": forms.Select(attrs={"class":"form-control"}),
+        }
 
 
 class CommentCreateForm(forms.ModelForm):
@@ -92,13 +102,4 @@ class CommentCreateForm(forms.ModelForm):
         widgets = {
             "text":forms.Textarea(attrs={"class":"cmnt_field"})
         }
-
-
-# class UploadForm(forms.Form):
-#     attachments = MultiMediaField(
-#         min_num=1,
-#         max_num=15,
-#         # max_file_size=1024*1024*5,
-#         media_type='audio'  # 'audio', 'video' or 'image'
-#     )
 

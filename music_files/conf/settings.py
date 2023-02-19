@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 
     'apps.music',
     'apps.accounts',
-    'multiupload'
+    'multiupload',
+    'django_select2',
 ]
 
 MIDDLEWARE = [

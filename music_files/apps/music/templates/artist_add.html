@@ -14,9 +14,7 @@
                                     </div>
                                     <form action="{% url 'artist_add' %}" class="ms_pro_form" method="post">
                                           {% csrf_token %}
-                                          {{form.title}}
-                                          {{form.img}}
-                                          {{form.desc}}
+                                          {{form}}
                                           <div class="pro-form-btn text-center marger_top15">
                                                 <button class="ms_btn" type="submit">
                                                       Запостить

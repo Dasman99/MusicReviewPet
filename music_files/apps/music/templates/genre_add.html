@@ -12,7 +12,7 @@
                                           <div class="ms_upload_box">
                                           </div>
                                     </div>
-                                    <form action="{% url 'artist_add' %}" class="ms_pro_form" method="post">
+                                    <form action="{% url 'genre_add' %}" class="ms_pro_form" method="post" enctype="multipart/form-data">
                                           {% csrf_token %}
                                           {{form}}
                                           <div class="pro-form-btn text-center marger_top15">

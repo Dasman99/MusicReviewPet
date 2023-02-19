@@ -21,8 +21,9 @@
                         {% endif %}
                         <form action="" method="POST" class="submit-recipe-form" enctype="multipart/form-data">
                             {% csrf_token %}
-                            {{form}}
-<!--                            <a href="{% url 'genre_add' %}">{{form.genre}}<img src="{% static 'images.plus-icon.webp' %}" alt="plus"></a>-->
+
+                            {{form.as_p}}
+                            <a href="{% url 'genre_add' %}"><img src="{% static 'images.plus-icon.webp' %}" alt="plus"></a>
                             <button type="submit" name="button" class="btn-submit">Сохранить пост</button>
                         </form>
                     </div>
@@ -32,4 +33,17 @@
     </div>
 </div>
 
+
+
+
 {% endblock %}
+
+
+{% block css_content %}
+    {{form.media.css}}
+{% endblock %}
+
+
+{% block js_content %}
+    {{form.media.js}}
+    {% endblock %}

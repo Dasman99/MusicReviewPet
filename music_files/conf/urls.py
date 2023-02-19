@@ -20,6 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.music.urls')),
     path('accounts/', include('apps.accounts.urls')),
+    path("select2/", include("django_select2.urls")),
 ]
 
 from django.conf import settings
