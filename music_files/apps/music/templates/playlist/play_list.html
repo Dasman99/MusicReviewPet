@@ -1,17 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="ms_album_single_wrapper ms_artist_single">
     <div class="album_single_data">
         <div class="album_single_img">
-            <img src="{{object.icon.url}}" alt="" class="img-fluid">
+            <img src="{{ object.image.url }}" alt="" class="img-fluid">
         </div>
         <div class="album_single_text">
             <h2>{{ object.name }}</h2>
-            <!--            <p class="singer_name">{{ object.country }}</p>-->
-            <div class="about_artist">
-                {{object.description}}
-            </div>
             <div class="album_btn">
                 <a href="#" class="ms_btn play_btn"><span class="play_all"><img src="images/svg/play_all.svg" alt="">Play All</span><span class="pause_all"><img src="images/svg/pause_all.svg" alt="">Pause</span></a>
                 <a href="#" class="ms_btn"><span class="play_all"><img src="images/svg/add_q.svg" alt="">Add To Queue</span></a>
@@ -37,11 +34,11 @@
                 <li class="text-center">Add To Favourites</li>
                 <li class="text-center">More</li>
             </ul>
-            {% for songs in object.genre_songs.all %}
+            {% for i in object.song.all %}
             <ul>
-                <li><a href="{{ songs.audio_file.url }}"><span class="play_no">{{songs.id}}</span><span class="play_hover"></span></a></li>
-                <li><a href="{{ songs.audio_file.url }}">{{ songs.title }}</a></li>
-                <li><a href="{{ songs.audio_file.url }}">{{ songs.singer }}</a></li>
+                <li><a href="{{ i.audio_file.url }}"><span class="play_no">{{i.id}}</span><span class="play_hover"></span></a></li>
+                <li><a href="{{ i.audio_file.url }}">{{ i.title }}</a></li>
+                <li><a href="{{ i.audio_file.url }}">{{ i.singer }}</a></li>
                 <li class="text-center"><a href="#">5:26</a></li>
                 <li class="text-center"><a href="#"><span class="ms_icon1 ms_fav_icon"></span></a></li>
                 <li class="text-center ms_more_icon"><a href="javascript:;"><span class="ms_icon1 ms_active_icon"></span></a>

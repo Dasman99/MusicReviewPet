@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="ms_album_single_wrapper">
+	<div class="album_single_data">
+		<div class="album_single_img">
+			<img src="{{object.image.url}}" alt="" class="img-fluid">
+		</div>
+		<div class="album_single_text">
+			<h2>{{ object.title }}</h2>
+			<p class="singer_name">{{ object.artist }}</p>
+			<div class="album_feature">
+				<a href="#" class="album_date">{{object_list.count}} song | 25:10</a>
+				<a href="#" class="album_date">Released March 23, 2018  | Abc Music Company</a>
+			</div>
+			<div class="album_btn">
+				<a href="#" class="ms_btn play_btn"><span class="play_all"><img src="images/svg/play_all.svg" alt="">Play All</span><span class="pause_all"><img src="images/svg/pause_all.svg" alt="">Pause</span></a>
+				<a href="#" class="ms_btn"><span class="play_all"><img src="images/svg/add_q.svg" alt="">Add To Queue</span></a>
+			</div>
+		</div>
+		<div class="album_more_optn ms_more_icon">
+			<span><img src="images/svg/more.svg" alt=""></span>
+		</div>
+		<ul class="more_option">
+			<li><a href="#"><span class="opt_icon"><span class="icon icon_fav"></span></span>Add To Favourites</a></li>
+			<li><a href="#"><span class="opt_icon"><span class="icon icon_queue"></span></span>Add To Queue</a></li>
+			<li><a href="#"><span class="opt_icon"><span class="icon icon_playlst"></span></span>Add To Playlist</a></li>
+			<li><a href="#"><span class="opt_icon"><span class="icon icon_share"></span></span>Share</a></li>
+		</ul>
+	</div>
+	<!----Song List---->
+	<div class="album_inner_list">
+		<div class="album_list_wrapper">
+			<ul class="album_list_name">
+				<li>#</li>
+				<li>Song Title</li>
+				<li>Artist</li>
+				<li class="text-center">Duration</li>
+				<li class="text-center">Add To Favourites</li>
+				<li class="text-center">More</li>
+			</ul>
+			<p style="display: none" id="myPlaylistData">
+				[
+				{% for song in object.albums_songs.all %}
+					{
+					image : "{{album.image.url}}",
+					title: "{{song.title}}",
+					artist: "Mushroom Records",
+					mp3: "{{song.audio_file.url}}",
+					oga: "http://www.jplayer.org/audio/ogg/TSP-01-Cro_magnon_man.ogg",
+					option : "myPlayListOtion"
+					},
+			    {% endfor %}]
+			</p>
+			{% for songs in object.albums_songs.all %}
+			<ul>
+
+				<li><a href="#"><span class="play_no">{{ songs.id }}</span><span class="play_hover"></span></a></li>
+				<li><a href="#">{{ songs.title }}</a></li>
+				<li><a href="#">{{ songs.singer }}</a></li>
+				<li class="text-center"><a href="#">5:26</a></li>
+				<li class="text-center"><a href="#"><span class="ms_icon1 ms_fav_icon"></span></a></li>
+				<li class="text-center ms_more_icon"><a href="javascript:;"><span class="ms_icon1 ms_active_icon"></span></a>
+					<ul class="more_option">
+						<li><a href="#"><span class="opt_icon"><span class="icon icon_fav"></span></span>Add To Favourites</a></li>
+						<li><a href="#"><span class="opt_icon"><span class="icon icon_dwn"></span></span>Download Now</a></li>
+						<li><a href="#" class="playlist-link" data-id="{{song.id}}"><span class="opt_icon"><span class="icon icon_playlst"></span></span>Add To Playlist</a></li>
+						<div class="playlist-container">
+						  <select class="playlist-select-dropdown">
+							<option value="">Выберите плейлист</option>
+						  </select>
+						</div>
+					</ul>
+				</li>
+			</ul>
+			{%endfor %}
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
+{% block js_content %}
+<script>
+<!--	// при клике на ссылку с классом "playlist-link"-->
+<!--	$('.playlist-link').on('click', function(e) {-->
+<!--	  e.preventDefault(); // отменяем стандартное поведение ссылки-->
+
+<!--	  var songId = $(this).data('id'); // достаем id песни из атрибута data-id-->
+<!--	  // делаем запрос на сервер, чтобы получить список плейлистов-->
+<!--	  $.get('/playlist/list/', function(playlists) {-->
+<!--	  	console.log(playlists);-->
+<!--	  	data = JSON.parse(playlists)-->
+<!--		// создаем модальное окно с списком плейлистов-->
+<!--		var modalContent = '<ul>';-->
+<!--		-->
+<!--		for (let i = 0; i < data.length; i++) {-->
+<!--		console.log(data[i].pk)-->
+<!--		  modalContent += '<li><a href="#" class="playlist-select" data-id="' + data[i].pk + '">' + data[i].fields.name + '</a></li>';-->
+<!--		}-->
+<!--		modalContent += '</ul>';-->
+<!--		console.log(modalContent)-->
+<!--		var x =$('body').append('<div class="ms_register_popup"><div class="modal show" role="dialog" style="display:block;">' + modalContent + '</div></div>');-->
+<!--		$('<style>.modal { display: block; }</style>').appendTo('body');-->
+
+<!--		// при клике на ссылку с классом "playlist-select"-->
+<!--		$('.playlist-select').on('click', function(e) {-->
+<!--		  e.preventDefault(); // отменяем стандартное поведение ссылки-->
+
+<!--		  var playlistId = $(this).data('id'); // достаем id плейлиста из атрибута data-id-->
+<!--		  // делаем запрос на сервер, чтобы добавить песню в выбранный плейлист-->
+<!--		  $.post('/playlist/add/' + playlistId + '/' + songId, function() {-->
+<!--			// закрываем модальное окно-->
+<!--			$('.modal').remove();-->
+<!--		  });-->
+
+<!--		});-->
+<!--	  });-->
+<!--	});-->
+</script>
+<script>
+	// при клике на ссылку с классом "playlist-link"
+	$('.playlist-link').on('click', function(e) {
+	  e.preventDefault(); // отменяем стандартное поведение ссылки
+
+	  var songId = $(this).data('id'); // достаем id песни из атрибута data-id
+	  // делаем запрос на сервер, чтобы получить список плейлистов
+	  $.get('/playlist/list/', function(playlists) {
+	  	console.log(playlists);
+	  	data = JSON.parse(playlists)
+		// создаем модальное окно с списком плейлистов
+		var playlistDropdown = $('.playlist-select-dropdown');
+		var modalContent = '<ul>';
+
+		for (let i = 0; i < data.length; i++) {
+		console.log(data[i].pk)
+		  modalContent += '<li><a href="#" class="playlist-select" data-id="' + data[i].pk + '">' + data[i].fields.name + '</a></li>';
+		}
+		modalContent += '</ul>';
+		console.log(modalContent)
+		var x =$('body').append('<div class="ms_register_popup"><div class="modal show" role="dialog" style="display:block;">' + modalContent + '</div></div>');
+		$('<style>.modal { display: block; }</style>').appendTo('body');
+
+		// при клике на ссылку с классом "playlist-select"
+		$('.playlist-select').on('click', function(e) {
+		  e.preventDefault(); // отменяем стандартное поведение ссылки
+
+		  var playlistId = $(this).data('id'); // достаем id плейлиста из атрибута data-id
+		  // делаем запрос на сервер, чтобы добавить песню в выбранный плейлист
+		  $.post('/playlist/add/' + playlistId + '/' + songId, function() {
+			// закрываем модальное окно
+			$('.modal').remove();
+		  });
+
+		});
+	  });
+	});
+</script>
+{% endblock %}

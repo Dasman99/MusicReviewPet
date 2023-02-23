@@ -39,9 +39,9 @@
             </ul>
             {% for songs in object.songs.all %}
             <ul>
-                <li><a href="#"><span class="play_no">{{songs.id}}</span><span class="play_hover"></span></a></li>
-                <li><a href="#">{{ songs.title }}</a></li>
-                <li><a href="#">{{ songs.singer }}</a></li>
+                <li><a href="{{ songs.audio_file.url }}"><span class="play_no">{{songs.id}}</span><span class="play_hover"></span></a></li>
+                <li><a href="{{ songs.audio_file.url }}">{{ songs.title }}</a></li>
+                <li><a href="{{ songs.audio_file.url }}">{{ songs.singer }}</a></li>
                 <li class="text-center"><a href="#">5:26</a></li>
                 <li class="text-center"><a href="#"><span class="ms_icon1 ms_fav_icon"></span></a></li>
                 <li class="text-center ms_more_icon"><a href="javascript:;"><span class="ms_icon1 ms_active_icon"></span></a>

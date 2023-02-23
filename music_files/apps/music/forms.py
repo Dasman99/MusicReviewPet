@@ -6,36 +6,24 @@ from django.forms.widgets import ClearableFileInput
 from multiupload.fields import MultiFileField, MultiMediaField
 
 
-class GenreForm(forms.Form):
-    title = forms.CharField(max_length=50)
-    slug = forms.SlugField()
-    image = forms.ImageField()
-    description = forms.Textarea()
-
-    # def clean_slug(self):
-    #     new_slug = self.cleaned_data['slug'].lower()
-    #
-    #     if new_slug == 'create':
-    #         raise ValidationError('Slug уже занят')
-    #     return new_slug
+class GenreForm(forms.ModelForm):
 
     class Meta:
         model = Genre
         fields = [
-            "text",
+            "name",
             "slug",
-            "image",
-                  ]
+            "icon",
+        ]
         widgets = {
-            "text":forms.Textarea(attrs={"class":"form-control"}),
-            "slug":forms.SlugField(),
-            "image":forms.ImageField(),
+            "text": forms.TextInput(),
+            "slug": forms.TextInput(),
+            "icon": forms.FileInput(),
         }
 
 
 class ArtistForm(forms.Form):
     title = forms.CharField(max_length=50)
-    slug = forms.SlugField()
     img = forms.ImageField()
     description = forms.Textarea()
 
@@ -46,17 +34,23 @@ class ArtistForm(forms.Form):
     #         raise ValidationError('Slug уже занят')
     #     return new_slug
 
-    def save(self):
-        new_add = Artist.object.create(
-            title=self.cleaned_data['title'],
-            desc=self.cleaned_data['description'],
-            img=self.cleaned_data['img'],
-            slug=self.cleaned_data['slug'],
+    class Meta:
+        model = Artist
+        fields = (
+            'title',
+            'image',
+            'description',
         )
-        return new_add
+
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "image": forms.FileInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control"}),
+        }
 
 
 from django_select2 import forms as s2forms
+
 
 class ArtistWidget(s2forms.ModelSelect2Widget):
     search_fields = [
@@ -64,8 +58,14 @@ class ArtistWidget(s2forms.ModelSelect2Widget):
     ]
 
 
+class GenreWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "name__icontains",
+    ]
+
+
 class ReviewForm(forms.ModelForm):
-    files = MultiMediaField(
+    song = MultiMediaField(
         min_num=1,
         max_num=15,
         # max_file_size=1024*1024*5,
@@ -81,16 +81,18 @@ class ReviewForm(forms.ModelForm):
             'image',
             'artist',
             'genre',
-            # 'file',
+            'song',
             'is_draft',
         )
 
         widgets = {
-            "title":forms.TextInput(attrs={"class":"form-control"}),
-            "image":forms.FileInput(attrs={"class":"form-control"}),
-            # "file":forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True})),
-            "artist":ArtistWidget(attrs={"class":"form-control"}),
-            "genre": forms.Select(attrs={"class":"form-control"}),
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "image": forms.FileInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control"}),
+            "song": forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True})),
+            "artist": ArtistWidget(attrs={"class": "form-control"}),
+            "genre": GenreWidget(attrs={"class": "form-control"}),
+            "is_draft": forms.CheckboxInput(attrs={"class":"form-control"})
         }
 
 
@@ -103,3 +105,16 @@ class CommentCreateForm(forms.ModelForm):
             "text":forms.Textarea(attrs={"class":"cmnt_field"})
         }
 
+
+class PlaylistCreateForm(forms.ModelForm):
+    name = forms.TextInput()
+
+    class Meta:
+        model = Playlist
+        fields = (
+            'name',
+        )
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+        }

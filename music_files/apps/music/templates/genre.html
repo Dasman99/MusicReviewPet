@@ -22,7 +22,9 @@
                                 <div class="ms_main_overlay">
                                     <div class="ms_box_overlay"></div>
                                     <div class="ms_play_icon">
+                                        <a href="{% url 'genre_detail' genre.pk %}">
                                         <img src="{{ genre.icon.url }}" alt="">
+                                            </a>
                                     </div>
                                 </div>
                             </div>

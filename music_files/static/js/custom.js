@@ -120,6 +120,7 @@ Assigned to: Theme Forest
                 slidesPerView: 6,
                 spaceBetween: 30,
                 loop: true,
+                watchOverflow: true,
                 speed: 1500,
                 navigation: {
                     nextEl: '.swiper-button-next5',

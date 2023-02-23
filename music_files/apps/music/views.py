@@ -13,12 +13,25 @@ from django.urls import reverse_lazy, reverse
 from .forms import *
 
 
-class IndexPage(TemplateView):
+class IndexPage(ListView):
     template_name = 'index.html'
+    # queryset = Playlist
+    # model = Playlist
+    # context_object_name = 'playlists'
+
+    def get_queryset(self):
+        return Review.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['review'] = Review.objects.all()
+        context['playlists'] = Playlist.objects.all()
+        context['favourite'] = Favourite.objects.all()
+        return context
 
 
 class ReviewListView(ListView):
-    template_name = "review.html"
+    template_name = "review/review.html"
     model = Review
     queryset = Review.objects.filter(is_draft=False)
 
@@ -30,7 +43,7 @@ class ReviewListView(ListView):
         else:
             context["latest_posts"] = latest_posts[:4]
 
-        context["genres"] = Genre.objects.all()
+        context["review/genres"] = Genre.objects.all()
 
         return context
 
@@ -46,18 +59,11 @@ class GenreDetailView(DetailView):
     model = Genre
 
 
-class GenreCreate(View):
-
-    def get(self, request):
-        form = GenreForm
-        return render(request, 'genre_add.html', context={'form': form})
-
-    def post(self, request):
-        bound_form = GenreForm()
-        if bound_form.is_valid():
-            new_add = bound_form.save()
-            return redirect(new_add)
-        return render(request, 'genre_add.html', context={'form': bound_form})
+class GenreCreate(CreateView):
+    model = Genre
+    form_class = GenreForm
+    success_url = reverse_lazy("review_create.html")
+    template_name = "genre_add.html"
 
 
 class ArtistListView(ListView):
@@ -87,17 +93,17 @@ class ArtistDetailView(DetailView):
 
 
 class AlbumListView(ListView):
-    template_name = "albums.html"
+    template_name = "albums/albums.html"
     model = Album
 
 
 class AlbumDetailView(DetailView):
-    template_name = "album_detail.html"
+    template_name = "albums/album_detail.html"
     model = Album
 
 
 class ReviewDetailView(DetailView):
-    template_name = "review_detail.html"
+    template_name = "review/review_detail.html"
     model = Review
 
     def get_context_data(self, **kwargs):
@@ -126,21 +132,25 @@ class AddCommentView(LoginRequiredMixin, CreateView):
 class ReviewCreateView(LoginRequiredMixin, FormView):
     model = Review
     form_class = ReviewForm
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('reviews_author')
     login_url = reverse_lazy('login')
-    template_name = "review_create.html"
+    template_name = "review/review_create.html"
 
     def form_valid(self, form):
-        for each in form.cleaned_data['title']:
-            Review.objects.create(file=each)
-        return super(ReviewCreateView, self).form_valid(form)
+        review = form.save(commit=False)
+        review.author = self.request.user
+        review.save()
+        song_titles = form.cleaned_data['title']
+        song = Song.objects.filter(title__in=song_titles)
+        review.song.set(song)
+        return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('index')
+        return reverse('reviews_author')
 
 
 class AuthorReviewListView(LoginRequiredMixin, ListView):
-    template_name = "reviews_author.html"
+    template_name = "review/reviews_author.html"
     model = Review
 
     def get_queryset(self):
@@ -155,7 +165,7 @@ class AuthorReviewListView(LoginRequiredMixin, ListView):
         else:
             context["latest_posts"] = latest_posts[:4]
 
-        context["genres"] = Genre.objects.all()
+        context["review/genres"] = Genre.objects.all()
 
         return context
 
@@ -170,5 +180,87 @@ class ReviewUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ReviewForm
     model = Review
     success_url = reverse_lazy("reviews_author")
-    template_name = "review_create.html"
+    template_name = "review/review_create.html"
 
+
+def deactivate_author_post(request, pk):
+    post = get_object_or_404(Review, id=pk)
+    post.is_draft = True
+    post.save(update_fields=["is_draft"])
+    return redirect(reverse_lazy("reviews_author"))
+
+
+def activate_author_post(request, pk):
+    post = get_object_or_404(Review, id=pk)
+    post.is_draft = False
+    post.save(update_fields=["is_draft"])
+    return redirect(reverse_lazy("reviews_author"))
+
+
+def allplaylists_view(request):
+    playlists = Playlist.objects.all()
+    return render(request, 'playlist/playlists.html',{'playlists':playlists,})
+
+
+class PlaylistView(LoginRequiredMixin, ListView):
+    template_name = "playlist/user_playlist.html"
+    model = Playlist
+    context_object_name = 'playlists'
+
+    def get_queryset(self):
+        qs = Playlist.objects.filter(user=self.request.user)
+        return qs
+
+
+class PlayListDetail(DetailView):
+    template_name = "playlist/play_list.html"
+    model = Playlist
+
+
+class PlaylistCreateView(LoginRequiredMixin, FormView):
+    # model = Playlist
+    # form_class = PlaylistCreateForm
+    # success_url = "user_playlist.html"
+    model = Playlist
+    form_class = PlaylistCreateForm
+    template_name = "playlist/user_playlist.html"
+    success_url = reverse_lazy("user_playlist.html")
+
+    # def post(self, request):
+    #     form = PlaylistCreateForm(data=request.POST)
+    #     if form.is_valid():
+    #         new_add = form.save()
+    #         return redirect(new_add)
+    #     return render(request, 'user_playlist.html', {'form': form})
+
+
+class FavouriteListView(ListView):
+    model = Favourite
+    context_object_name = 'favourite'
+    template_name = "favourite.html"
+
+
+# class FavouriteSongsView(DetailView):
+#     template_name = "favourite.html"
+#     model = Favourite
+
+from django.http.response import  JsonResponse
+
+def add_song_to_playlist(request,id , song_pk,):
+    song = get_object_or_404(Song,id=song_pk)
+    playlist = get_object_or_404(Playlist , id=id)
+    playlist.song.add(song)
+    playlist.save()
+    return JsonResponse({"status":"ok", "message":"Музыка успешно добавлена в плейлист"})
+
+
+from django.core import serializers
+
+def get_user_playlists(request):
+    if request.user.is_authenticated:
+        playlists = Playlist.objects.filter(user=request.user)
+        serialized_queryset = serializers.serialize('json', playlists)
+        print(serialized_queryset)
+        return JsonResponse(data=serialized_queryset, safe=False)
+    else:
+        return JsonResponse(data={"message":"Войдите на аккаунт"})

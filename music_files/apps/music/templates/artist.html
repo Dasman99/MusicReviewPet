@@ -58,9 +58,6 @@
                                     <img src="{{ artist.image.url }}" alt="" class="img-fluid">
                                     <div class="ms_main_overlay">
                                         <div class="ms_box_overlay"></div>
-                                        <div class="ms_more_icon">
-                                            <img src="{{ artist.image.url }}" alt="">
-                                        </div>
                                         <ul class="more_option">
                                             <li><a href="#"><span class="opt_icon"><span class="icon icon_fav"></span></span>Add To Favourites</a></li>
                                             <li><a href="#"><span class="opt_icon"><span class="icon icon_queue"></span></span>Add To Queue</a></li>
@@ -68,7 +65,9 @@
                                             <li><a href="#"><span class="opt_icon"><span class="icon icon_share"></span></span>Share</a></li>
                                         </ul>
                                         <div class="ms_play_icon">
+                                            <a href="{% url 'artist_detail' artist.pk %}">
                                             <img src="{{ artist.image.url }}" alt="">
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
